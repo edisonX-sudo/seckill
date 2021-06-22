@@ -39,6 +39,10 @@
         "        <span class=\"secKill-name\">秒杀次数:</span><br/>\n" +
         "        <input type=\"number\" name=\"count\" class=\"secKill-input-number\" id=\"count\" value=\"10\" placeholder=\"尝试次数\"/>\n" +
         "    </div>\n" +
+        "    <div class=\"secKill-filed\">\n" +
+        "        <span class=\"secKill-name\">提前毫秒:</span><br/>\n" +
+        "        <input type=\"number\" name=\"prefire\" class=\"secKill-input-number\" id=\"prefire\" value=\"10\" placeholder=\"提前毫秒\"/>\n" +
+        "    </div>\n" +
         "    <div class=\"secKill-button\" id=\"add\"> 新增 </div>\n" +
         "    <div class=\"secKill-button\" id=\"close\"> 关闭 </div>\n" +
         "</div>";
@@ -128,6 +132,7 @@
         killTask.name = $("#secKillForm #taskName").val();
         killTask.selector = $("#secKillForm input[name=selector]:checked").val();
         killTask.location = location;
+        killTask.preFire = $("#secKillForm #prefire").val();
         killTask.killTime = $("#secKillForm #killTime").val();
         killTask.frequency = $("#secKillForm #frequency").val();
         if($("#secKillForm #frequency").val() < 100) {
@@ -140,6 +145,8 @@
             return false;
         }
         killTask.status = 0;
+
+        console.log("saveTask",killTask)
         chrome.storage.local.get({"tasks": new Array()}, function(value){
             var tasks = value.tasks;
             tasks.push(killTask);

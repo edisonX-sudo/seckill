@@ -3,13 +3,14 @@
  * @param taskId
  */
 function secKill(taskId) {
-    console.log("开始秒杀！");
+    let startTime = new Date();
+    console.log("开始秒杀！", startTime, startTime.valueOf()%1000);
     console.log(taskId);
-    chrome.storage.local.get({"tasks": new Array()}, function(value) {
+    chrome.storage.local.get({"tasks": new Array()}, function (value) {
         tasks = value.tasks;
-        if(tasks != undefined && tasks != null && tasks.length > 0) {
-            for(var i=0; i<tasks.length; i++) {
-                if(taskId == tasks[i].id) {
+        if (tasks != undefined && tasks != null && tasks.length > 0) {
+            for (var i = 0; i < tasks.length; i++) {
+                if (taskId == tasks[i].id) {
                     dealTask(tasks[i]);
                 }
             }
@@ -38,20 +39,21 @@ function getElementsByXPath(STR_XPATH) {
  */
 function dealTask(task) {
     var count = 1;
-    var timer = setInterval(function () {
-        if(task.selector == "jQuery") {
-            $(task.location).each(function(){
+    var handler = function () {
+        if (task.selector == "jQuery") {
+            $(task.location).each(function () {
                 this.click();
             });
         } else {
-            $(getElementsByXPath(task.location)).each(function(){
+            $(getElementsByXPath(task.location)).each(function () {
                 this.click();
             });
         }
         count++;
-        if(count>task.count) {
+        if (count > task.count) {
             clearInterval(timer);
         }
-    }, task.frequency);
+    }, timer = setInterval(handler, task.frequency);
+    handler();
 
 }

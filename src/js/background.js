@@ -25,15 +25,16 @@ chrome.extension.onConnect.addListener(function(port) {
  */
 function processTask(standerTime) {
     console.log("后端开启轮休任务！");
+    let timeGap = 50;
     var timer = setInterval(function () {
-        standerTime += 500;
+        standerTime += timeGap;
         chrome.storage.local.get({"tasks": new Array()}, function(value) {
             tasks = value.tasks;
             if(tasks != undefined && tasks.length > 0) {
                 for(var i=0; i<tasks.length; i++) {
 
                     if(tasks[i].status == 0) {
-                        if((new Date(tasks[i].killTime) - standerTime) >= tickTime && (new Date(tasks[i].killTime) - standerTime) <= (tickTime+600)){
+                        if((new Date(tasks[i].killTime) - standerTime) >= tickTime && (new Date(tasks[i].killTime) - standerTime) <= (tickTime+timeGap*1.3)){
                             console.log(formatDateTime(new Date(tasks[i].killTime).getTime()));
                             var task = tasks[i];
                             //秒杀开始提醒（检查是否打开相关标签页）没有提示打开
@@ -68,7 +69,7 @@ function processTask(standerTime) {
                                 }
                             });
                         }
-                        if((new Date(tasks[i].killTime) - standerTime) >= 0 && (new Date(tasks[i].killTime) - standerTime) <= 600){
+                        if((new Date(tasks[i].killTime) - standerTime) >= 0 && (new Date(tasks[i].killTime) - standerTime) <= timeGap*1.3){
                             //异步执行点击事件
                             var task = tasks[i];
                             var tabId = null;
@@ -92,7 +93,7 @@ function processTask(standerTime) {
                 }
             }
         });
-    }, 500);
+    }, timeGap);
     if(oldTimer != null) {
         clearInterval(oldTimer);
     }
