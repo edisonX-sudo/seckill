@@ -13,28 +13,45 @@ var tickTime = 120000;   //120000 2分钟
 //popup页面更新时间
 chrome.extension.onConnect.addListener(function(port) {
     console.log("Connected .....");
-    port.onMessage.addListener(function(msg) {
+    port.onMessage.addListener(async function(msg) {
         console.log("收到前台时间更新：" + msg);
-        processTask(msg);
+        await processTask(msg);
         port.postMessage("时间更新成功");
     });
 });
 
+chrome.extension.onMessage.addListener(
+  function(message, sender, sendResponse) {
+    if ( message.type == 'getTabId' )
+    {
+      sendResponse({ tabId: sender.tab.id });
+    }
+  }
+);
+
 /**
  * 每隔500ms去检查任务,异步处理任务
  */
-function processTask(standerTime) {
-    console.log("后端开启轮休任务！");
-    let timeGap = 50;
+async function processTask(standerTime) {
+  let now = new Date();
+  var fixTimeline = 1000-now.valueOf()%1000;
+    console.log("后端开启轮休任务！",fixTimeline,now.valueOf(),standerTime);
+    await new Promise(function (resolve){
+      setTimeout(resolve,fixTimeline)
+    })
+    console.log("对其时间！",new Date().valueOf(),standerTime);
+
     var timer = setInterval(function () {
-        standerTime += timeGap;
+        var startTime = new Date()
+        console.log('processTask',startTime.valueOf())
+        standerTime = startTime.valueOf();
         chrome.storage.local.get({"tasks": new Array()}, function(value) {
             tasks = value.tasks;
             if(tasks != undefined && tasks.length > 0) {
                 for(var i=0; i<tasks.length; i++) {
 
                     if(tasks[i].status == 0) {
-                        if((new Date(tasks[i].killTime) - standerTime) >= tickTime && (new Date(tasks[i].killTime) - standerTime) <= (tickTime+timeGap*1.3)){
+                        if((new Date(tasks[i].killTime) - standerTime) >= tickTime && (new Date(tasks[i].killTime) - standerTime) <= (tickTime+22)){
                             console.log(formatDateTime(new Date(tasks[i].killTime).getTime()));
                             var task = tasks[i];
                             //秒杀开始提醒（检查是否打开相关标签页）没有提示打开
@@ -69,14 +86,14 @@ function processTask(standerTime) {
                                 }
                             });
                         }
-                        if((new Date(tasks[i].killTime) - standerTime) >= 0 && (new Date(tasks[i].killTime) - standerTime) <= timeGap*1.3){
+                        if((new Date(tasks[i].killTime) - standerTime) >= 0 && (new Date(tasks[i].killTime) - standerTime) <= 22){
                             //异步执行点击事件
                             var task = tasks[i];
                             var tabId = null;
-                            chrome.tabs.query({url: task.url}, function(results) {
+                            chrome.tabs.query({}, function(results) {
                                 if (results.length > 0) {
                                     for(var j=0; j<results.length; j++){
-                                        if(results[j].active){
+                                        if(results[j].id === task.tabId){
                                             tabId = results[j].id;
                                         }
                                     }
@@ -84,7 +101,8 @@ function processTask(standerTime) {
                                         tabId = results[0].id;
                                     }
                                 }
-                                chrome.tabs.executeScript(tabId, { code: "secKill("+task.id+");"});
+                                console.log('processTask-secKill',chrome.tabs,task,results,new Date(task.killTime).valueOf(),standerTime,(new Date(task.killTime) - standerTime))
+                                chrome.tabs.executeScript(tabId, { code: "secKill("+task.id+"," + JSON.stringify(task) + ");"});
                                 var opt = { type: "basic", title: "秒杀助手提醒", message: task.name + "\n秒杀任务完成！", iconUrl: "image/bell.png"};
                                 chrome.notifications.create(dialogId+++"", opt);
                             });
@@ -93,7 +111,7 @@ function processTask(standerTime) {
                 }
             }
         });
-    }, timeGap);
+    }, 20);
     if(oldTimer != null) {
         clearInterval(oldTimer);
     }

@@ -59,6 +59,7 @@ $(document).ready(function () {
                 $(card).find("span[datafld='name']").attr("title", tasks[i].name);
                 $(card).find("span[datafld='url']").text(tasks[i].url.length > urlLength? tasks[i].url.substr(0, urlLength)+"..." : tasks[i].url);
                 $(card).find("span[datafld='url']").attr("title", tasks[i].url);
+                $(card).find("span[datafld='tabId']").text(tasks[i].tabId);
                 $(card).find("span[datafld='selector']").text(tasks[i].selector);
                 $(card).find("span[datafld='location']").text(tasks[i].location.length > urlLength? tasks[i].location.substr(0, urlLength)+"..." : tasks[i].location);
                 $(card).find("span[datafld='location']").attr("title", tasks[i].location);
@@ -150,6 +151,7 @@ $(document).ready(function () {
                         break;
                 }
                 $(contentDiv).next().find("li[datatype='status']").text(statusText);
+                $(contentDiv).find("span[datafld='tabId']").text(currentTask.tabId);
                 $(contentDiv).find("span[datafld='killTime']").text(currentTask.killTime.replace("T", " "));
                 $(contentDiv).find("span[datafld='leftTime']").text(getLeftTime(new Date(currentTask.killTime).getTime() - standerTime));
                 $(contentDiv).find("span[datafld='leftTime']").attr("killTime", new Date(currentTask.killTime).getTime());

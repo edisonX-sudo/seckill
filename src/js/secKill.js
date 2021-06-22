@@ -2,9 +2,18 @@
  * 根据任务ID获取任务，执行点击
  * @param taskId
  */
-function secKill(taskId) {
+async function secKill(taskId,task) {
+    killTime = new Date(task.killTime).valueOf()
+    let preActTime = 4;
     let startTime = new Date();
-    console.log("开始秒杀！", startTime, startTime.valueOf()%1000);
+    let fixTimeline = killTime - startTime;
+    if(fixTimeline > 0){
+      console.log('fixTimeline,preActTime',fixTimeline,preActTime)
+      await new Promise(function (resolve){
+        setTimeout(resolve,fixTimeline - preActTime)
+      })
+    }
+    console.log("开始秒杀！",new Date().valueOf(), startTime,startTime.valueOf(), killTime);
     console.log(taskId);
     chrome.storage.local.get({"tasks": new Array()}, function (value) {
         tasks = value.tasks;
@@ -54,6 +63,6 @@ function dealTask(task) {
             clearInterval(timer);
         }
     }, timer = setInterval(handler, task.frequency);
-    handler();
+    //handler();
 
 }
