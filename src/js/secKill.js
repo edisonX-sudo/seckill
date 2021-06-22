@@ -4,7 +4,7 @@
  */
 async function secKill(taskId,task) {
     killTime = new Date(task.killTime).valueOf()
-    let preActTime = 4;
+    let preActTime = task.prefire;
     let startTime = new Date();
     let fixTimeline = killTime - startTime;
     if(fixTimeline > 0){

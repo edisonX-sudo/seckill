@@ -41,7 +41,7 @@
     "    </div>\n" +
     "    <div class=\"secKill-filed\">\n" +
     "        <span class=\"secKill-name\">提前毫秒:</span><br/>\n" +
-    "        <input type=\"number\" name=\"prefire\" class=\"secKill-input-number\" id=\"prefire\" value=\"10\" placeholder=\"提前毫秒\"/>\n" +
+    "        <input type=\"number\" name=\"prefire\" class=\"secKill-input-number\" id=\"prefire\" value=\"4\" placeholder=\"提前毫秒\"/>\n" +
     "    </div>\n" +
     "    <div class=\"secKill-button\" id=\"add\"> 新增 </div>\n" +
     "    <div class=\"secKill-button\" id=\"close\"> 关闭 </div>\n" +
@@ -138,7 +138,7 @@
     killTask.name = $("#secKillForm #taskName").val();
     killTask.selector = $("#secKillForm input[name=selector]:checked").val();
     killTask.location = location;
-    killTask.preFire = $("#secKillForm #prefire").val();
+    killTask.prefire = Number($("#secKillForm #prefire").val());
     killTask.killTime = $("#secKillForm #killTime").val();
     killTask.frequency = $("#secKillForm #frequency").val();
     if ($("#secKillForm #frequency").val() < 10) {
